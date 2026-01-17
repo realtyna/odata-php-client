@@ -204,6 +204,10 @@ class ODataFilterBuilder
         $escapedField = $this->escapeField($field);
         $escapedValue = $this->escapeValue($value);
 
+		if (is_numeric($escapedValue)) {
+			$escapedValue = "'$escapedValue'";
+		}
+
         $this->filterExpression .= "contains($escapedField, $escapedValue)";
 
         return $this;
