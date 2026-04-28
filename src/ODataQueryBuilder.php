@@ -23,10 +23,11 @@ class ODataQueryBuilder
      * @param mixed $value The value to compare against.
      * @param string $logical The logical operator ('and' or 'or') to combine with the previous condition.
      * @param string|null $function The filter function, e.g., 'contains', 'startswith', 'endswith', 'length', or null for default.
+     * @param bool $forceString When true, numeric values are forced to string literals for this filter.
      *
      * @return $this
      */
-    public function addFilter($field, $operator, $value, $logical = 'and', $function = null): static
+    public function addFilter($field, $operator, $value, $logical = 'and', $function = null, bool $forceString = false): static
     {
 
         if ($function === 'contains') {
@@ -42,11 +43,11 @@ class ODataQueryBuilder
         } elseif ($function === 'length') {
             $this->filterBuilder->length($field, $value, $operator, $logical);
         } elseif ($function === 'in') {
-            $this->filterBuilder->whereIn($field, $value, $logical);
+            $this->filterBuilder->whereIn($field, $value, $logical, $forceString);
         } elseif ($function === 'raw') {
             $this->filterBuilder->raw($value);
         } else {
-            $this->filterBuilder->where($field, $operator, $value, $logical);
+            $this->filterBuilder->where($field, $operator, $value, $logical, $forceString);
         }
 
         return $this;

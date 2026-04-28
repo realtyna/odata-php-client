@@ -27,7 +27,8 @@ class ODataFilterBuilder
         array|string $field,
         string $operator = null,
         mixed $value = null,
-        string $logical = 'and'
+        string $logical = 'and',
+        bool $forceString = false
     ): static {
         if ($this->filterExpression !== '' && $this->state != 'started') {
             $this->filterExpression .= $this->getCurrentBoolean();
@@ -41,7 +42,7 @@ class ODataFilterBuilder
         } else {
             // Handle regular conditions
             $escapedField = $this->escapeField($field);
-            $escapedValue = $this->escapeValue($value);
+            $escapedValue = $this->escapeValue($value, $forceString);
 
             $this->filterExpression .= "$escapedField $operator $escapedValue";
         }
@@ -140,13 +141,17 @@ class ODataFilterBuilder
      * Escape a value for use in the filter expression.
      *
      * @param mixed $value
+     * @param bool $forceString Force numeric values to be escaped as string literals.
      *
      * @return string
      */
-    private function escapeValue(mixed $value)
+    private function escapeValue(mixed $value, bool $forceString = false)
     {
         // You may need to implement value escaping logic specific to your OData service.
         if (is_numeric($value)) {
+			if($forceString) {
+				return "'" . addslashes($value) . "'";
+			}
             return $value;
         }
 
@@ -170,7 +175,7 @@ class ODataFilterBuilder
      *
      * @return static $this
      */
-    public function whereIn(string $field, array $values, string $logical = 'and'): static
+    public function whereIn(string $field, array $values, string $logical = 'and', bool $forceString = false): static
     {
         if ($this->filterExpression !== '' && $this->state != 'started') {
             $this->filterExpression .= $this->getCurrentBoolean();
@@ -178,7 +183,7 @@ class ODataFilterBuilder
         $this->state = 'middle';
 
         $escapedField = $this->escapeField($field);
-        $escapedValues = implode(', ', array_map([$this, 'escapeValue'], $values));
+        $escapedValues = implode(', ', array_map(fn ($value) => $this->escapeValue($value, $forceString), $values));
 
         $this->filterExpression .= "$escapedField in ($escapedValues)";
 
