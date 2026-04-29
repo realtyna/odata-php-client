@@ -147,6 +147,10 @@ class ODataFilterBuilder
      */
     private function escapeValue(mixed $value, bool $forceString = false)
     {
+		if($value === null) {
+			return 'null';
+		}
+
         // You may need to implement value escaping logic specific to your OData service.
         if (is_numeric($value)) {
 			if($forceString) {
