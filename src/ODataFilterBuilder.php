@@ -151,6 +151,10 @@ class ODataFilterBuilder
 			return 'null';
 		}
 
+		if(is_bool($value)) {
+			return $value ? 'true' : 'false';
+		}
+
         // You may need to implement value escaping logic specific to your OData service.
         if (is_numeric($value)) {
 			if($forceString) {
