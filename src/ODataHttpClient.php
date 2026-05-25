@@ -34,7 +34,7 @@ class ODataHttpClient
         // Separate the path from the query string
         $parsed_url = parse_url($endpoint);
         $path = $parsed_url['path'];
-        $query_string = isset($parsed_url['query']) ? $parsed_url['query'] : '';
+        $query_string = $parsed_url['query'] ?? '';
 
         // Encode the query string
         parse_str($query_string, $query_params);
